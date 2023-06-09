@@ -1,36 +1,61 @@
 #pragma once
 
+#include <iostream>
+#define BLAST_WIN
 #ifdef BLAST_WIN
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
-// #pragma comment(lib, "Dwmapi.lib")
+
 #include <Windows.h>
 #include <dwmapi.h>
 
 namespace BL
 {
+    WNDPROC original_proc;
+    WNDPROC second_proc;
+
+    LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    {
+        switch (uMsg)
+        {
+            case WM_NCCALCSIZE:
+            {
+                // Remove the window's standard sizing border
+                if (wParam == TRUE && lParam != NULL)
+                {
+                    NCCALCSIZE_PARAMS* pParams = reinterpret_cast<NCCALCSIZE_PARAMS*>(lParam);
+                    pParams->rgrc[0].top += 1;
+                    pParams->rgrc[0].right -= 2;
+                    pParams->rgrc[0].bottom -= 2;
+                    pParams->rgrc[0].left += 2;
+                }
+                return 0;
+            }
+
+        }
+        
+        return CallWindowProc(original_proc, hWnd, uMsg, wParam, lParam);
+    }
     void disableTitlebar(GLFWwindow* window)
     {
         HWND hWnd = glfwGetWin32Window(window);
 
-        // Remove the title bar
+        
         LONG_PTR lStyle = GetWindowLongPtr(hWnd, GWL_STYLE);
+        lStyle |= WS_THICKFRAME;
         lStyle &= ~WS_CAPTION;
         SetWindowLongPtr(hWnd, GWL_STYLE, lStyle);
 
-        // Set the window shape and rounded corners
-        DWMNCRENDERINGPOLICY policy = DWMNCRP_ENABLED;
-        DwmSetWindowAttribute(hWnd, DWMWA_NCRENDERING_POLICY, &policy, sizeof(policy));
-
-        // Extend the frame into the client area
-        MARGINS margins = { 0 };
-        DwmExtendFrameIntoClientArea(hWnd, &margins);
-
-        // Adjust the window size to remove the thin frame at the top
         RECT windowRect;
         GetWindowRect(hWnd, &windowRect);
-        SetWindowPos(hWnd, NULL, 0, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, SWP_FRAMECHANGED | SWP_NOMOVE);
+        int width = windowRect.right - windowRect.left;
+        int height = windowRect.bottom - windowRect.top;
+
+        SetWindowPos(hWnd, NULL, 0, 0, width, height, SWP_FRAMECHANGED | SWP_NOMOVE);
+        original_proc =  (WNDPROC)GetWindowLongPtr(hWnd, GWLP_WNDPROC);
+        second_proc =  (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WindowProc));
+        SetWindowPos(hWnd, NULL, 0, 0, width, height, SWP_FRAMECHANGED | SWP_NOMOVE);
     }
 }
 #endif

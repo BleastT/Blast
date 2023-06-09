@@ -161,6 +161,6 @@ namespace BL
     void Shader::setUniformVec2f(std::string name, float v1, float v2) {glUniform2f(m_Uniforms[name], v1, v2);}
     void Shader::setUniformVec3f(std::string name, float v1, float v2, float v3) {glUniform3f(m_Uniforms[name], v1, v2, v3);}
     void Shader::setUniformVec4f(std::string name, float v1, float v2, float v3, float v4) {glUniform4f(m_Uniforms[name], v1, v2, v3, v4);}
-    void Shader::setUniformMat4(std::string name, Mat4& mat) {glUniformMatrix4fv(m_Uniforms[name], 1, GL_TRUE, &mat.mat[0]);}
+    void Shader::setUniformMat4(std::string name, Mat4& mat) {glUniformMatrix4fv(m_Uniforms[name], 1, GL_FALSE, mat.mat);}
 
 }

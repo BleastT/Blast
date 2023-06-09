@@ -46,7 +46,7 @@ namespace BL
         // Initialize the window
         m_Win = glfwCreateWindow(m_ws.width, m_ws.height, m_ws.titlebar_name.c_str(), NULL, NULL);
 
-        disableTitlebar(m_Win);
+        // disableTitlebar(m_Win);
         if(!m_Win)
         {
             return false;
@@ -55,7 +55,6 @@ namespace BL
         // Make the OpenGL context current
         glfwMakeContextCurrent(m_Win);
 
-        // disableTitlebar(m_Win);
         // Initialize GLEW
         if (glewInit() != GLEW_OK)
         {
@@ -124,6 +123,7 @@ namespace BL
                     glfwMakeContextCurrent(this->m_Win);
 
                     // Clear the color buffer
+                    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                     glClear(GL_COLOR_BUFFER_BIT);
 
 
