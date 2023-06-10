@@ -46,7 +46,7 @@ namespace BL
         // Initialize the window
         m_Win = glfwCreateWindow(m_ws.width, m_ws.height, m_ws.titlebar_name.c_str(), NULL, NULL);
 
-        // disableTitlebar(m_Win);
+        disableTitlebar(m_Win);
         if(!m_Win)
         {
             return false;
@@ -128,8 +128,7 @@ namespace BL
 
 
                     this->m_Renderer->Update(nullptr);
-
-                    // Swap the front and back buffers
+                    
                     glfwSwapBuffers(this->m_Win);
 
                     this->handleEvents();

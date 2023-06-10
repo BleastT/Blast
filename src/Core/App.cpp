@@ -11,6 +11,7 @@ namespace BL
     }
 
     // Define the destructor for the App class
+    
     App::~App()
     {
         // Destroy all windows and clear the windows map

@@ -13,6 +13,7 @@
 
 
 class GLFWwindow;
+
 // Create a namespace named BL
 namespace BL
 {

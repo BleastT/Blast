@@ -1,19 +1,19 @@
 #pragma once
 
 #include <iostream>
-#define BLAST_WIN
+
 #ifdef BLAST_WIN
 #define GLFW_EXPOSE_NATIVE_WIN32
+#define WIN32_LEAN_AND_MEAN 
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
 #include <Windows.h>
-#include <dwmapi.h>
+// #include <dwmapi.h>
 
 namespace BL
 {
     WNDPROC original_proc;
-    WNDPROC second_proc;
 
     LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
@@ -32,7 +32,52 @@ namespace BL
                 }
                 return 0;
             }
+            case WM_NCPAINT:
+            {
+                // Prevent the non-client area from being painted
+                return 0;
+            }
+            case WM_NCHITTEST:
+            {
+                // Expand the hit test area for resizing
+                const int borderWidth = 8; // Adjust this value to control the hit test area size
 
+                POINTS mousePos = MAKEPOINTS(lParam);
+                POINT clientMousePos = { mousePos.x, mousePos.y };
+                ScreenToClient(hWnd, &clientMousePos);
+
+                RECT windowRect;
+                GetClientRect(hWnd, &windowRect);
+
+                if (clientMousePos.y >= windowRect.bottom - borderWidth)
+                {
+                    if (clientMousePos.x <= borderWidth)
+                        return HTBOTTOMLEFT;
+                    else if (clientMousePos.x >= windowRect.right - borderWidth)
+                        return HTBOTTOMRIGHT;
+                    else
+                        return HTBOTTOM;
+                }
+                else if (clientMousePos.y <= borderWidth)
+                {
+                    if (clientMousePos.x <= borderWidth)
+                        return HTTOPLEFT;
+                    else if (clientMousePos.x >= windowRect.right - borderWidth)
+                        return HTTOPRIGHT;
+                    else
+                        return HTTOP;
+                }
+                else if (clientMousePos.x <= borderWidth)
+                {
+                    return HTLEFT;
+                }
+                else if (clientMousePos.x >= windowRect.right - borderWidth)
+                {
+                    return HTRIGHT;
+                }
+
+                break;
+            }
         }
         
         return CallWindowProc(original_proc, hWnd, uMsg, wParam, lParam);
@@ -41,7 +86,6 @@ namespace BL
     {
         HWND hWnd = glfwGetWin32Window(window);
 
-        
         LONG_PTR lStyle = GetWindowLongPtr(hWnd, GWL_STYLE);
         lStyle |= WS_THICKFRAME;
         lStyle &= ~WS_CAPTION;
@@ -52,9 +96,8 @@ namespace BL
         int width = windowRect.right - windowRect.left;
         int height = windowRect.bottom - windowRect.top;
 
-        SetWindowPos(hWnd, NULL, 0, 0, width, height, SWP_FRAMECHANGED | SWP_NOMOVE);
-        original_proc =  (WNDPROC)GetWindowLongPtr(hWnd, GWLP_WNDPROC);
-        second_proc =  (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WindowProc));
+        original_proc = (WNDPROC)GetWindowLongPtr(hWnd, GWLP_WNDPROC);
+        (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WindowProc));
         SetWindowPos(hWnd, NULL, 0, 0, width, height, SWP_FRAMECHANGED | SWP_NOMOVE);
     }
 }
