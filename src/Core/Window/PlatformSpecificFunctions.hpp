@@ -26,9 +26,9 @@ namespace BL
                 {
                     NCCALCSIZE_PARAMS* pParams = reinterpret_cast<NCCALCSIZE_PARAMS*>(lParam);
                     pParams->rgrc[0].top += 1;
-                    pParams->rgrc[0].right -= 2;
-                    pParams->rgrc[0].bottom -= 2;
-                    pParams->rgrc[0].left += 2;
+                    pParams->rgrc[0].right -= 1;
+                    pParams->rgrc[0].bottom -= 1;
+                    pParams->rgrc[0].left += 1;
                 }
                 return 0;
             }
@@ -78,6 +78,11 @@ namespace BL
 
                 break;
             }
+            case WM_NCACTIVATE:
+            {
+                // Prevent non-client area from being redrawn during window activation
+                return TRUE;
+            }
         }
         
         return CallWindowProc(original_proc, hWnd, uMsg, wParam, lParam);
@@ -97,7 +102,7 @@ namespace BL
         int height = windowRect.bottom - windowRect.top;
 
         original_proc = (WNDPROC)GetWindowLongPtr(hWnd, GWLP_WNDPROC);
-        (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WindowProc));
+        SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WindowProc));
         SetWindowPos(hWnd, NULL, 0, 0, width, height, SWP_FRAMECHANGED | SWP_NOMOVE);
     }
 }
