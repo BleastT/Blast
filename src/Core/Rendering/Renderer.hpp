@@ -24,6 +24,8 @@ namespace BL
             unsigned int m_VAO;
             unsigned int m_EBO;
 
+            int m_rotation;
+
         // Functions
         public:
             Renderer();

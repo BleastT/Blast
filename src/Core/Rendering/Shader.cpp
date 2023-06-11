@@ -26,19 +26,18 @@ namespace BL
 
             void main()
             {
-                gl_Position = vec4(aPos, 1.0);
+                gl_Position = mvp * vec4(aPos, 1.0f);
             }
         )";
 
         std::string fragmentSource = R"(
             #version 330 core
-            out vec4 FragColor;
 
-            uniform vec3 color;
+            uniform vec4 color;
 
             void main()
             {
-                FragColor = vec4(color.x, color.y, color.z, 1.0);
+                gl_FragColor = color;
             } 
         )";
 
@@ -114,53 +113,53 @@ namespace BL
     void Shader::findUniforms(const std::string& source)
     {
         std::stringstream s(source);
-
         std::string line;
 
-        while(std::getline(s, line))
+        while (getline(s, line))
         {
-            if(line.find("uniform") != std::string::npos)
+            std::string tempName;
+            std::string finalName;
+            int location;
+            if (line.find("uniform") != std::string::npos)
             {
-                char last_char;
-                std::string uniform_name;
-                for (std::string::size_type i = line.size(); i > 0; i--) {
-                    if(line[i] == ' ' && last_char != ';')
-                    {
-                        break;
-                    }
-
-                    if(line[i] != ';')
-                    {
-                        std::string temp = uniform_name;
-                        uniform_name = line[i] + temp;
-                    }
-
-                    if(line[i] != ' ')
-                    {
-                        last_char = line[i];
-                    }
-                }
-
-                int location = glGetUniformLocation(m_Shader, uniform_name.c_str());
-                if(location == -1)
+                for (int i = 0; i < line.length(); i++)
                 {
-                    std::cout << "The uniform '" << uniform_name << "' is either unused or starts with 'gl_' which is an invalid syntax for a uniform's name." << std::endl;
-                    return;
+                    if (line[i] == ' ')
+                        tempName = "";
+                    else
+                        tempName += line[i];
                 }
-               
-                m_Uniforms[uniform_name] = location;
+
+                for (int i = 0; i < tempName.length(); i++)
+                {
+                    if (tempName[i] != ';')
+                        finalName += tempName[i];
+                }
+
+                // find uniform Location
+                int location = glGetUniformLocation(m_Shader, finalName.c_str());
+                if (location == -1)
+                {
+                    std::cout << "The uniform '" << finalName << "' is either unused or starts with 'gl_' which is an invalid syntax for a uniform's name." << std::endl;
+                    break;
+                }
+
+                // update the uniforms vector
+                m_Uniforms[finalName] = location;
             }
         }
 
     }
 
 
-    void Shader::setUniformVec2i(std::string name, int v1, int v2) { glUniform2i(m_Uniforms[name], v1, v2);}
-    void Shader::setUniformVec3i(std::string name, int v1, int v2, int v3) {glUniform3i(m_Uniforms[name], v1, v2, v3);}
-    void Shader::setUniformVec4i(std::string name, int v1, int v2, int v3, int v4) { return; glUniform4i(m_Uniforms[name], v1, v2, v3, v4);}
-    void Shader::setUniformVec2f(std::string name, float v1, float v2) {glUniform2f(m_Uniforms[name], v1, v2);}
-    void Shader::setUniformVec3f(std::string name, float v1, float v2, float v3) {glUniform3f(m_Uniforms[name], v1, v2, v3);}
-    void Shader::setUniformVec4f(std::string name, float v1, float v2, float v3, float v4) {glUniform4f(m_Uniforms[name], v1, v2, v3, v4);}
-    void Shader::setUniformMat4(std::string name, Mat4& mat) {glUniformMatrix4fv(m_Uniforms[name], 1, GL_FALSE, mat.mat);}
+    void Shader::setUniformVec2i(std::string name, int v1, int v2) {if(!uniformExists(name)) return;  glUniform2i(m_Uniforms[name], v1, v2);}
+    void Shader::setUniformVec3i(std::string name, int v1, int v2, int v3) {if(!uniformExists(name)) return;  glUniform3i(m_Uniforms[name], v1, v2, v3);}
+    void Shader::setUniformVec4i(std::string name, int v1, int v2, int v3, int v4) { if(!uniformExists(name)) return; glUniform4i(m_Uniforms[name], v1, v2, v3, v4);}
+
+    void Shader::setUniformVec2f(std::string name, float v1, float v2) {if(!uniformExists(name)) return;  glUniform2f(m_Uniforms[name], v1, v2);}
+    void Shader::setUniformVec3f(std::string name, float v1, float v2, float v3) {if(!uniformExists(name)) return;  glUniform3f(m_Uniforms[name], v1, v2, v3);}
+    void Shader::setUniformVec4f(std::string name, float v1, float v2, float v3, float v4) {if(!uniformExists(name)) return; glUniform4f(m_Uniforms[name], v1, v2, v3, v4);}
+
+    void Shader::setUniformMat4(std::string name, Mat4& mat) {if(!uniformExists(name)) return; glUniformMatrix4fv(m_Uniforms[name], 1, GL_TRUE, mat.mat);}
 
 }

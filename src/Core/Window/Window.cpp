@@ -46,7 +46,7 @@ namespace BL
         // Initialize the window
         m_Win = glfwCreateWindow(m_ws.width, m_ws.height, m_ws.titlebar_name.c_str(), NULL, NULL);
 
-        disableTitlebar(m_Win);
+        // disableTitlebar(m_Win);
         if(!m_Win)
         {
             return false;
@@ -123,7 +123,10 @@ namespace BL
                     glfwMakeContextCurrent(this->m_Win);
 
                     // Clear the color buffer
-                    glClear(GL_COLOR_BUFFER_BIT);
+                    glClearColor(0.3f, 1.0f, 0.5f, 1.0f);
+                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+                    this->m_Renderer->Update(nullptr);
                     
                     glfwSwapBuffers(this->m_Win);
 

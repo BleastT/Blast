@@ -42,6 +42,16 @@ namespace BL
             unsigned int link(unsigned int vertex, unsigned int fragment);
 
             void findUniforms(const std::string& source);
+            bool uniformExists(std::string name) {
+                if(m_Uniforms.find(name) != m_Uniforms.end())
+                {
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
             
     };
 }
+ 

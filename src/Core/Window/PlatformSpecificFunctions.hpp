@@ -9,7 +9,6 @@
 #include <GLFW/glfw3native.h>
 
 #include <Windows.h>
-// #include <dwmapi.h>
 
 namespace BL
 {
@@ -188,7 +187,7 @@ namespace BL
 }
 #endif
 
-#if defined(GLFW_EXPOSE_NATIVE_WIN32) || defined(GLFW_EXPOSE_NATIVE_X11) || defined(GLFW_EXPOSE_NATIVE_COCOA)
+#if defined(BLAST_WIN) || defined(BLAST_MAC) || defined(BLAST_LINUX)
 #else
 #include <GLFW/glfw3.h>
 namespace BL
