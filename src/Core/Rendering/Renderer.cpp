@@ -84,6 +84,11 @@ namespace BL
         m_shader.setUniformVec4f("color", 0.2f, 0.3f, 0.5f, 1.0f);
         m_shader.setUniformMat4("mvp", mvp);
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+
+        // Clear the color buffer
+        glClearColor(0.3f, 1.0f, 0.5f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);
     }
 }
