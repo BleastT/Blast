@@ -8,7 +8,7 @@ cd build
 cmake .. -G "MinGW Makefiles"
 mingw32-make
 
-if exist "%file_name%.exe" (start %file_name% & exit)
+if exist "%file_name%.exe" (start %file_name% & goto END)
 
 :END
 

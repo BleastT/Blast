@@ -1,5 +1,5 @@
 #include "./Renderer.hpp"
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 
 namespace BL
@@ -50,6 +50,7 @@ namespace BL
         m_FWidth = fwidth;
         m_FHeight = fheight;
         m_proj = Mat4::orthographic(0.0f, fwidth, 0.0f, fheight, 100.0f, -100.0f);
+        std::cout << m_FWidth << " " << m_FHeight << std::endl;
     }
 
     void Renderer::Update(Component* page)
@@ -88,7 +89,7 @@ namespace BL
 
         // Clear the color buffer
         glClearColor(0.3f, 1.0f, 0.5f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);
     }
 }

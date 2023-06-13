@@ -1,36 +1,18 @@
 #include "Blast.hpp"
-#include "Components/Component.hpp"
 
-struct page1 : public BL::Component{
-
-    int name;
-
-    void changeName()
-    {
-        name = 200;
-
-    }
-
-    void update();
-
-    void render()
-    {
-    }
-
-};
-
-int main()
+int main ()
 {
     BL::App app;
 
     BL::WindowSettings ws;
 
 
-
-    
     BL::Window* win1 = app.createWindow("windowA", ws);
+    // BL::Window* win2 = app.createWindow("windowB", ws);
+    // BL::Window* win3 = app.createWindow("windowC", ws);
 
     app.start();
+
     while(app.allRunning())
     {
         app.update();

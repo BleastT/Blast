@@ -96,7 +96,8 @@ namespace BL
         }
     }
 
-    // Update the application by polling events
+
+
     void App::update()
     {
         glfwWaitEvents();
@@ -111,7 +112,7 @@ namespace BL
 
         for (auto it = m_Windows.begin(); it != m_Windows.end(); ++it)
         {
-            if (it->second->shouldClose())
+            if (!it->second->DoesWindowExit())
             {
                 result = false;
                 break;
@@ -130,7 +131,7 @@ namespace BL
 
         for (auto it = m_Windows.begin(); it != m_Windows.end(); ++it)
         {
-            if (!it->second->shouldClose())
+            if (it->second->DoesWindowExit())
             {
                 result = true;
                 break;
@@ -149,7 +150,7 @@ namespace BL
     {
         if (m_Windows.find(name) != m_Windows.end())
         {
-            return !m_Windows[name]->shouldClose();
+            return m_Windows[name]->DoesWindowExit();
         }
 
         std::cout << name << " window does not exist from function: windowRunning(std::string name)" << std::endl;

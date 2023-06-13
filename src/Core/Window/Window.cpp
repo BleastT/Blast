@@ -1,11 +1,13 @@
 // Include the Window.hpp header file
 #include "Window.hpp"
 
+
 // Include necessary libraries
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "./PlatformSpecificFunctions.hpp"
+
 
 
 // Create a namespace named BL
@@ -15,6 +17,7 @@ namespace BL
     // Parameters:
     // - ws: WindowSettings object that contains the window settings
     Window::Window(WindowSettings ws)
+    : were_event_handled(false)
     {
         // Initialize member variables
         m_ws = ws;
@@ -37,12 +40,6 @@ namespace BL
         // Initialize GLFW
         glfwInit();
 
-        // Set the OpenGL context version
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_REFRESH_RATE, GLFW_DONT_CARE);
-
-
         // Initialize the window
         m_Win = glfwCreateWindow(m_ws.width, m_ws.height, m_ws.titlebar_name.c_str(), NULL, NULL);
 
@@ -55,8 +52,11 @@ namespace BL
         // Make the OpenGL context current
         glfwMakeContextCurrent(m_Win);
 
+        // TODO: implement custom framerate control since enabling vsync seems to make the window flicker when resizing
+        glfwSwapInterval(1);
+
         // Initialize GLEW
-        if (glewInit() != GLEW_OK)
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
             std::cout << "Failed to initialize OpenGL" << std::endl;
             return false;
@@ -92,9 +92,9 @@ namespace BL
     // Check if the window should close
     // Returns:
     // - true if the window should close, false otherwise
-    bool Window::shouldClose()
+    bool Window::DoesWindowExit()
     {
-        return glfwWindowShouldClose(m_Win);
+        return m_Window_exist;
     }
 
     // Start the rendering thread
@@ -114,35 +114,18 @@ namespace BL
 
             // Start the render thread
             m_Render_thread = std::thread([this] {
-                double lasttime = glfwGetTime();
-                int dt = 0;
-                double plus = 0;
-                while (!this->shouldClose())
+                while (this->DoesWindowExit())
                 {
-                    // Make the OpenGL context current
+
                     glfwMakeContextCurrent(this->m_Win);
 
                     this->m_Renderer->Update(nullptr);
-                    
-                    glfwSwapBuffers(this->m_Win);
-
                     this->handleEvents();
                     this->resetEvents();
-                    
+
+                    glfwSwapBuffers(this->m_Win);
                     glfwMakeContextCurrent(NULL);
 
-                    dt = ((lasttime + 1.0/this->m_ws.framerate) - glfwGetTime()) * 1000;
-                    if(dt > 0)
-                    {
-                        std::this_thread::sleep_for (std::chrono::milliseconds(dt));
-                        plus = 0;
-                    }
-                    if(dt < 0)
-                    {
-                        plus = -dt;
-                    }
-
-                    lasttime += (1.0/this->m_ws.framerate) - plus;
                 }
             });
         }
@@ -200,9 +183,15 @@ namespace BL
 
             // std::cout << m_Fwidth << " " << m_Fheight << std::endl;
         }
+
+        were_event_handled = true;
     }
     void Window::resetEvents()
     {
-        m_Event->reset();
+        if(were_event_handled)
+        {
+            m_Event->reset();
+            were_event_handled = false;
+        }
     }
 }

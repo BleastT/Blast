@@ -34,6 +34,7 @@ namespace BL
 
         Renderer* m_Renderer;
         Event* m_Event;
+        bool were_event_handled;
 
 
         // Events informations
@@ -66,7 +67,7 @@ namespace BL
         // Check if the window should close
         // Returns:
         // - true if the window should close, false otherwise
-        bool shouldClose();
+        bool DoesWindowExit();
 
         // Start the rendering thread
         void startRenderThread();
@@ -77,9 +78,12 @@ namespace BL
         // Destroy the GLFW window
         void destroyWindow();
 
-    private:
-        // Private member functions accessible only within the class
+
         void handleEvents();
         void resetEvents();
+
+    private:
+        // Private member functions accessible only within the class
+
     };
 }

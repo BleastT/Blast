@@ -1,0 +1,60 @@
+//#include <BL/Blast>
+//
+//
+// struct page : public BL::Component
+// {
+//     int hello = 0;
+//     Interval update;
+
+//     void start()
+//     {
+//         update.addFunction(function to run, interval in milliseconds);
+//         hello = 0;
+//     }
+
+//     void quit()
+//     {
+//			update server before quitting.
+//     }
+
+//     BL::Component render()
+//     {
+//         return (
+//             Block.name("bbb").onClick(handleclick).onRelease(dasdasdasdasssssssssss).addChildren({
+
+//                 Text("nigga"),
+
+//                 TextInput.value("dsdsdsds").onChange(hanleTextChaneg),
+
+//                 Video(),
+
+//                 Block.addChildren({
+
+//                     Block.addChildren({
+//                         dropdownmenu({item: "sds"}).addChildren({
+
+//                         })
+//                     }).name("dd dd dd")
+
+//                 }).name("bb bb bb")
+
+//             }).name("bb bb bb"); 
+//         );
+//     }
+
+// }
+
+
+// Style textStyle;
+// Style textStyle2;
+
+// StyleCollection mainpagestyles;
+// mainpagestyles.addGlobalVariable("name", value);
+
+// mainpagestyles.addStyle("name", textStyle);
+// mainpagestyles.addStyle("name2", textStyle2);
+
+// win.addPage(name, page);
+// win.switchpage(name);
+
+// win.addStyleCollection(name, mainpagestyles);
