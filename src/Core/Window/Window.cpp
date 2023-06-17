@@ -32,6 +32,7 @@ namespace BL
         // Destructor is empty as there is no dynamic memory allocation
     }
 
+
     // Initialize the window and the OpenGL context
     // Returns:
     // - true if initialization is successful, false otherwise
@@ -66,7 +67,6 @@ namespace BL
 
         // Set the window existence flag to true
         m_Window_exist = true;
-
 
         m_Renderer = new Renderer();
         m_Event = new Event();

@@ -1,5 +1,25 @@
 #include "Blast.hpp"
 
+
+struct home_button : BL::Component
+{
+    void start()
+    {
+
+    }
+
+    void quit()
+    {
+
+    }
+
+    BL::Component render()
+    {
+
+    }
+};
+
+
 int main ()
 {
     BL::App app;

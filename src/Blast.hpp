@@ -9,9 +9,7 @@
 
 // COMPONENTS
 
-#include "./Components/Block.hpp"
-#include "./Components/Text.hpp"
-#include "./Components/Input.hpp"
+#include "./Components/Component.hpp"
 
 // Styling
 

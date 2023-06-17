@@ -88,7 +88,7 @@ namespace BL
 
 
         // Clear the color buffer
-        glClearColor(0.3f, 1.0f, 0.5f, 1.0f);
+        // glClearColor(0.3f, 1.0f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);
     }
