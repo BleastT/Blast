@@ -10,10 +10,10 @@ namespace BL
     {
 
         float vertices[] = {
-            0.5f,  0.5f, 1.0f,  // top right
-            0.5f, -0.5f, 1.0f,  // bottom right
-            -0.5f, -0.5f, 1.0f,  // bottom left
-            -0.5f,  0.5f, 1.0f   // top left 
+            0.5f,  0.5f, 0.0f,  // top right
+            0.5f, -0.5f, 0.0f,  // bottom right
+            -0.5f, -0.5f, 0.0f,  // bottom left
+            -0.5f,  0.5f, 0.0f   // top left 
         };
 
         unsigned int indices[] = {
@@ -49,22 +49,20 @@ namespace BL
     {
         m_FWidth = fwidth;
         m_FHeight = fheight;
+
         m_proj = Mat4::orthographic(0.0f, fwidth, 0.0f, fheight, 100.0f, -100.0f);
-        std::cout << m_FWidth << " " << m_FHeight << std::endl;
+
+        glViewport(0, 0, m_FWidth, m_FHeight);
+        glScissor(0, 0, m_FWidth, m_FHeight);
     }
 
-    void Renderer::Update(Component* page)
+    void Renderer::Update(Component* page, StyleCollection* stylecollection)
     {
-        Draw();
+        ComputeComponent(page, nullptr);
     }
 
 
     void Renderer::ComputeComponent(Component* child, Component* parent)
-    {
-
-    }
-
-    void Renderer::Draw()
     {
         if(m_rotation >= 360)
         {
@@ -84,12 +82,18 @@ namespace BL
 
         m_shader.setUniformVec4f("color", 0.2f, 0.3f, 0.5f, 1.0f);
         m_shader.setUniformMat4("mvp", mvp);
+
+
+        Draw();
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
         // Clear the color buffer
-        // glClearColor(0.3f, 1.0f, 0.5f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    void Renderer::Draw()
+    {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);
     }
 }

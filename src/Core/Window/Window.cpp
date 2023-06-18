@@ -5,6 +5,7 @@
 // Include necessary libraries
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <string>
 
 #include "./PlatformSpecificFunctions.hpp"
 
@@ -17,7 +18,7 @@ namespace BL
     // Parameters:
     // - ws: WindowSettings object that contains the window settings
     Window::Window(WindowSettings ws)
-    : were_event_handled(false)
+    : were_event_handled(false), m_activepage("none")
     {
         // Initialize member variables
         m_ws = ws;
@@ -44,7 +45,7 @@ namespace BL
         // Initialize the window
         m_Win = glfwCreateWindow(m_ws.width, m_ws.height, m_ws.titlebar_name.c_str(), NULL, NULL);
 
-        disableTitlebar(m_Win);
+        // disableTitlebar(m_Win);
         if(!m_Win)
         {
             return false;
@@ -65,23 +66,24 @@ namespace BL
 
         std::cout << glGetString(GL_VERSION) << std::endl;
 
+
         // Set the window existence flag to true
         m_Window_exist = true;
 
         m_Renderer = new Renderer();
         m_Event = new Event();
 
-        glfwSetWindowUserPointer(m_Win, m_Event);
-
-        m_Event->setEventsCallbacks(m_Win);
-
         m_Width = m_ws.width;
         m_Height = m_ws.height;
-
         glfwGetFramebufferSize(m_Win, &m_Fwidth, &m_Fheight);
 
-        glViewport(0, 0, m_Fwidth, m_Fheight );
         m_Renderer->UpdateProjection(m_Fwidth, m_Fheight);
+
+        glfwSetWindowUserPointer(m_Win, m_Event);
+        m_Event->setEventsCallbacks(m_Win);
+
+       
+        glEnable(GL_SCISSOR_TEST);
 
         // Unbind the current OpenGL context
         glfwMakeContextCurrent(NULL);
@@ -119,7 +121,19 @@ namespace BL
 
                     glfwMakeContextCurrent(this->m_Win);
 
-                    this->m_Renderer->Update(nullptr);
+                    if(!m_pages.empty())
+                    {
+                        if(m_activepage == "none")
+                        {
+                            m_activepage = m_pages.begin()->first;
+
+                            std::cout << "no active page selected, using " << m_activepage << " instead\n";
+                        }
+
+
+                        this->m_Renderer->Update(&m_pages[m_activepage], &m_stylecollections[m_activestylecollection]);
+                    }
+
                     this->handleEvents();
                     this->resetEvents();
 
@@ -177,8 +191,6 @@ namespace BL
             glfwGetWindowSize(m_Win, &m_Width, &m_Height);
             glfwGetFramebufferSize(m_Win, &m_Fwidth, &m_Fheight);
 
-            glViewport(0, 0, m_Fwidth, m_Fheight);
-
             m_Renderer->UpdateProjection(m_Fwidth, m_Fheight);
 
             // std::cout << m_Fwidth << " " << m_Fheight << std::endl;
@@ -186,6 +198,7 @@ namespace BL
 
         were_event_handled = true;
     }
+
     void Window::resetEvents()
     {
         if(were_event_handled)
@@ -193,5 +206,54 @@ namespace BL
             m_Event->reset();
             were_event_handled = false;
         }
+    }
+
+
+
+    void Window::appendNewPage(std::string ref_name, Component page)
+    {
+        if(m_pages.find(ref_name) == m_pages.end())
+        {
+            m_pages[ref_name] = page;
+            return;
+        }
+
+        std::cout << "The page " << ref_name << " already exists \n";
+
+    }
+
+
+    void Window::setPageActive(std::string ref_name)
+    {
+        if(m_pages.find(ref_name) != m_pages.end())
+        {
+            m_activepage = ref_name;
+            return;
+        }
+
+        std::cout << "The page " << ref_name << " does not exist \n"; 
+    }
+
+
+    void Window::appendNewStyleCollection(std::string ref_name, StyleCollection collection)
+    {
+        if(m_stylecollections.find(ref_name) == m_stylecollections.end())
+        {
+            m_stylecollections[ref_name] = collection;
+            return;
+        }
+
+        std::cout << "The style collection " << ref_name << " already exist \n";
+    }
+
+    void Window::setStyleCollectionActive(std::string ref_name)
+    {
+        if(m_stylecollections.find(ref_name) != m_stylecollections.end())
+        {
+            m_activestylecollection = ref_name;
+            return;
+        }
+
+        std::cout << "The style collection " << ref_name << " already exist \n";
     }
 }

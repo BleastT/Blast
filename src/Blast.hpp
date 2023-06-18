@@ -10,9 +10,10 @@
 // COMPONENTS
 
 #include "./Components/Component.hpp"
+#include "./Components/Block.hpp"
+
 
 // Styling
 
-#include "./Styling/ColorTable.hpp"
-#include "./Styling/Color.hpp"
 #include "./Styling/Style.hpp"
+#include "./Styling/StyleCollection.hpp"

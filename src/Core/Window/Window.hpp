@@ -3,13 +3,17 @@
 
 
 #include <iostream>
+#include <string>
 #include <thread>
 #include <chrono>
+#include <map>
+#include <vector>
 
 // Include the WindowSettings.hpp header file
 #include "./WindowSettings.hpp"
 #include "../Rendering/Renderer.hpp"
 #include "./Event.hpp"
+#include "../../Styling/StyleCollection.hpp"
 
 
 class GLFWwindow;
@@ -36,6 +40,11 @@ namespace BL
         Event* m_Event;
         bool were_event_handled;
 
+        std::map<std::string, Component> m_pages;
+        std::string m_activepage;
+
+        std::map<std::string, StyleCollection> m_stylecollections;
+        std::string m_activestylecollection;
 
         // Events informations
         int m_Width;
@@ -81,6 +90,14 @@ namespace BL
 
         void handleEvents();
         void resetEvents();
+
+
+        void appendNewPage(std::string ref_name, Component page);
+        void setPageActive(std::string ref_name);
+
+        void appendNewStyleCollection(std::string ref_name, StyleCollection collection);
+        void setStyleCollectionActive(std::string ref_name);
+        void setStyleCollectionInactive(std::string ref_name);
 
     private:
         // Private member functions accessible only within the class

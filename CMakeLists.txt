@@ -4,7 +4,7 @@ project(Blast VERSION 0.1.0 LANGUAGES CXX C)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
 set(CMAKE_CXX_FLAGS "-std=c++17")
-set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_BUILD_TYPE "Debug")
 
 file(GLOB_RECURSE  code_SRC
      "src/*.cpp"
