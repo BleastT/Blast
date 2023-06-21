@@ -34,11 +34,10 @@ namespace BL
 
             void UpdateProjection(int fwidth, int fheight);
 
-            void Update(Component* page, StyleCollection* stylecollection);
+            void ComputeComponent(Component* parent, Component* child, StyleCollection* stylecollection, float dt);
 
         private:
 
-            void ComputeComponent(Component* child, Component* parent);
             void Draw();
     };
 }

@@ -3,9 +3,11 @@
 
 
 // Include necessary libraries
+#include <chrono>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <string>
+#include <thread>
 
 #include "./PlatformSpecificFunctions.hpp"
 
@@ -24,7 +26,6 @@ namespace BL
         m_ws = ws;
 
         m_Window_exist = false;
-        m_Render_thread_started = false;
     }
 
     // Define the destructor for the Window class
@@ -42,10 +43,12 @@ namespace BL
         // Initialize GLFW
         glfwInit();
 
+        glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, 1);
+
         // Initialize the window
         m_Win = glfwCreateWindow(m_ws.width, m_ws.height, m_ws.titlebar_name.c_str(), NULL, NULL);
 
-        // disableTitlebar(m_Win);
+        disableTitlebar(m_Win);
         if(!m_Win)
         {
             return false;
@@ -55,7 +58,7 @@ namespace BL
         glfwMakeContextCurrent(m_Win);
 
         // TODO: implement custom framerate control since enabling vsync seems to make the window flicker when resizing
-        glfwSwapInterval(1);
+        glfwSwapInterval(0);
 
         // Initialize GLEW
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -77,14 +80,13 @@ namespace BL
         m_Height = m_ws.height;
         glfwGetFramebufferSize(m_Win, &m_Fwidth, &m_Fheight);
 
-        m_Renderer->UpdateProjection(m_Fwidth, m_Fheight);
-
         glfwSetWindowUserPointer(m_Win, m_Event);
         m_Event->setEventsCallbacks(m_Win);
 
-       
-        glEnable(GL_SCISSOR_TEST);
+        m_Renderer->UpdateProjection(m_Fwidth, m_Fheight);
 
+        // int count;
+        refreshrate = glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate;
         // Unbind the current OpenGL context
         glfwMakeContextCurrent(NULL);
 
@@ -103,63 +105,52 @@ namespace BL
     void Window::startRenderThread()
     {
 
-        // Check if the render thread has already started
-        if (!m_Render_thread_started)
+
+        if(!m_Window_exist)
         {
-            if(!m_Window_exist)
+            initialize();
+        }
+
+
+
+        // Start the render thread
+        m_Render_thread = std::thread([this] {
+            while (DoesWindowExit())
             {
-                initialize();
-            }
-
-            // Set the render thread started flag to true
-            m_Render_thread_started = true;
-
-            // Start the render thread
-            m_Render_thread = std::thread([this] {
-                while (this->DoesWindowExit())
+                if(!m_pages.empty())
                 {
+                    glfwMakeContextCurrent(m_Win);
 
-                    glfwMakeContextCurrent(this->m_Win);
-
-                    if(!m_pages.empty())
+                    if(m_activepage == "none")
                     {
-                        if(m_activepage == "none")
-                        {
-                            m_activepage = m_pages.begin()->first;
+                        m_activepage = m_pages.begin()->first;
 
-                            std::cout << "no active page selected, using " << m_activepage << " instead\n";
-                        }
-
-
-                        this->m_Renderer->Update(&m_pages[m_activepage], &m_stylecollections[m_activestylecollection]);
+                        std::cout << "no active page selected, using " << m_activepage << " instead\n";
                     }
 
-                    this->handleEvents();
-                    this->resetEvents();
 
-                    glfwSwapBuffers(this->m_Win);
+                    m_Renderer->ComputeComponent(&m_pages[m_activepage], nullptr, &m_stylecollections[m_activestylecollection], 1.0f / refreshrate);
+
+                    handleEvents();
+
+                    glfwSwapBuffers(m_Win);
                     glfwMakeContextCurrent(NULL);
 
+                    CapFrame(refreshrate);
                 }
-            });
-        }
+            }
+        });
     }
 
     // End the rendering thread
     void Window::endRenderThread()
     {
-        // Check if the render thread has started
-        if (m_Render_thread_started)
-        {
-            // Set the render thread started flag to false
-            m_Render_thread_started = false;
 
-            glfwSetWindowShouldClose(m_Win, GL_TRUE);
-            m_Window_exist = false;
+        glfwSetWindowShouldClose(m_Win, GL_TRUE);
+        m_Window_exist = false;
 
-            // Wait for the render thread to finish
-            m_Render_thread.join();
-        }
+        // Wait for the render thread to finish
+        m_Render_thread.join();  
     }
 
     // Destroy the GLFW window
@@ -192,22 +183,10 @@ namespace BL
             glfwGetFramebufferSize(m_Win, &m_Fwidth, &m_Fheight);
 
             m_Renderer->UpdateProjection(m_Fwidth, m_Fheight);
-
-            // std::cout << m_Fwidth << " " << m_Fheight << std::endl;
         }
 
-        were_event_handled = true;
+        m_Event->reset();
     }
-
-    void Window::resetEvents()
-    {
-        if(were_event_handled)
-        {
-            m_Event->reset();
-            were_event_handled = false;
-        }
-    }
-
 
 
     void Window::appendNewPage(std::string ref_name, Component page)
@@ -255,5 +234,20 @@ namespace BL
         }
 
         std::cout << "The style collection " << ref_name << " already exist \n";
+    }
+
+
+    void Window::CapFrame(int framerate)
+    {
+        double current_time = glfwGetTime();
+
+        if(current_time - last_time < 1.0f / framerate)
+        {
+            long interval = ((1.0f / framerate) - (current_time - last_time)) * 1000.0f;
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(interval));
+        }
+
+        last_time = glfwGetTime();
     }
 }

@@ -15,16 +15,18 @@ namespace BL
 
         public:
 
-            void name (std::string new_name)
+            Component& name (std::string new_name)
             {
                 m_name = new_name;
+                return *this;
             }
-            void addChildren(std::vector<Component> children)
+            Component& addChildren(std::vector<Component> children)
             {
                 m_children.insert(m_children.end(), children.begin(), children.end());
+                return *this;
             }
 
-            const std::vector<Component>& getChildren()
+            std::vector<Component>& getChildren()
             {
                 return m_children;
             } 

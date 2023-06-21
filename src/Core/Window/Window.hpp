@@ -34,7 +34,6 @@ namespace BL
         bool m_Window_exist;        // Flag to indicate if the window exists
 
         std::thread m_Render_thread;        // Thread for rendering
-        bool m_Render_thread_started;       // Flag to indicate if the render thread has started
 
         Renderer* m_Renderer;
         Event* m_Event;
@@ -55,6 +54,8 @@ namespace BL
 
         double m_mousex;
         double m_mousey;
+
+        int refreshrate;
 
         // Functions
     public:
@@ -89,7 +90,6 @@ namespace BL
 
 
         void handleEvents();
-        void resetEvents();
 
 
         void appendNewPage(std::string ref_name, Component page);
@@ -101,6 +101,9 @@ namespace BL
 
     private:
         // Private member functions accessible only within the class
+
+        double last_time;
+        void CapFrame(int framerate);
 
     };
 }

@@ -50,26 +50,20 @@ namespace BL
         m_FWidth = fwidth;
         m_FHeight = fheight;
 
-        m_proj = Mat4::orthographic(0.0f, fwidth, 0.0f, fheight, 100.0f, -100.0f);
-
         glViewport(0, 0, m_FWidth, m_FHeight);
-        glScissor(0, 0, m_FWidth, m_FHeight);
-    }
 
-    void Renderer::Update(Component* page, StyleCollection* stylecollection)
-    {
-        ComputeComponent(page, nullptr);
+        m_proj = Mat4::orthographic(0.0f, fwidth, 0.0f, fheight, 100.0f, -100.0f);
     }
 
 
-    void Renderer::ComputeComponent(Component* child, Component* parent)
+    void Renderer::ComputeComponent(Component* parent, Component* child, StyleCollection* stylecollection, float dt)
     {
         if(m_rotation >= 360)
         {
             m_rotation = 0;
         }
 
-        m_rotation += 1;
+        m_rotation += 250 * dt;
 
         m_shader.bind();
 
@@ -85,14 +79,11 @@ namespace BL
 
 
         Draw();
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-
-        // Clear the color buffer
     }
 
     void Renderer::Draw()
     {
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);
     }
