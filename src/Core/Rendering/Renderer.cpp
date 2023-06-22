@@ -6,7 +6,6 @@ namespace BL
 {
     
     Renderer::Renderer()
-    : m_rotation(0)
     {
 
         float vertices[] = {
@@ -20,6 +19,8 @@ namespace BL
             0, 1, 3,   // first triangle
             1, 2, 3    // second triangle
         };  
+
+
 
         m_shader.initialize();
 
@@ -45,6 +46,14 @@ namespace BL
         
     }
 
+    void Renderer::Update(Component* page, StyleCollection* stylecollection, float dt)
+    {
+        page_layout.children.clear();
+        page_layout = ComputeComponent(nullptr, page, stylecollection, dt);
+        DrawPage();
+    }
+
+
     void Renderer::UpdateProjection(int fwidth, int fheight)
     {
         m_FWidth = fwidth;
@@ -56,8 +65,10 @@ namespace BL
     }
 
 
-    void Renderer::ComputeComponent(Component* parent, Component* child, StyleCollection* stylecollection, float dt)
+    ComponentLayout Renderer::ComputeComponent(Component* parent, Component* child, StyleCollection* stylecollection, float dt)
     {
+        ComponentLayout component_layout;
+
         int width;
         int height;
 
@@ -65,22 +76,26 @@ namespace BL
         int top;
 
         Color background_color;
-
         float opacity;
 
+        for(Component& child_ : child->getChildren())
+        {
+            component_layout.children.push_back(ComputeComponent(child, &child_, stylecollection, dt));
+        }
+
+        
         if(parent == nullptr)
         {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
             width = m_FWidth;
             height = m_FHeight;
 
             left = 0;
             top = 0;
 
-            background_color = Color::rgb(250, 198, 14);
+            component_layout.background_color = Color::rgb(250, 198, 14);
 
-            opacity = 1;
+            component_layout.opacity = 1;
+
         }
         else
         {
@@ -110,46 +125,48 @@ namespace BL
             left = component_styles[0].left;
             top = component_styles[0].top;
 
-            background_color = component_styles[0].background_color;
+            component_layout.background_color = component_styles[0].background_color;
 
-            opacity = component_styles[0].opacity;
-        }   
-
-
-
-        // std::cout << parent->m_name << std::endl;
-
-        // if(m_rotation >= 360)
-        // {
-        //     m_rotation = 0;
-        // }
-
-        // m_rotation += 250 * dt;
-
-        m_shader.bind();
+            component_layout.opacity = component_styles[0].opacity;
+        }  
 
         Vec3 s(width, height, 1);
-        Vec3 t(left + (width / 2), top + (height / 2), 0);
+        Vec3 t(left + (width / 2.0f), top + (height / 2.0f), 0);
         Vec3 r(0, 0, 0);
 
         Mat4 model = Mat4::transform(r, s, t);
-        Mat4 mvp = m_proj.multiply(model);
+        component_layout.mvp = m_proj.multiply(model);
 
-        m_shader.setUniformVec4f("color", background_color.getFormattedRGB().x, background_color.getFormattedRGB().y, background_color.getFormattedRGB().z, opacity);
-        m_shader.setUniformMat4("mvp", mvp);
-
-
-        Draw();
-
-
-        for(Component& child_ : child->getChildren())
+        if(parent == nullptr)
         {
-            ComputeComponent(child, &child_, stylecollection, dt);
+            return component_layout;
         }
+        else{
+            return component_layout;
+        }
+
     }
 
-    void Renderer::Draw()
+    void Renderer::DrawPage()
     {
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);
+
+        m_shader.bind();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        DrawElement(page_layout);
+    }
+
+    void Renderer::DrawElement(ComponentLayout& component_layout)
+    {
+        m_shader.setUniformVec4f("color", component_layout.background_color.getFormattedRGB().x, component_layout.background_color.getFormattedRGB().y, component_layout.background_color.getFormattedRGB().z, component_layout.opacity);
+        m_shader.setUniformMat4("mvp", component_layout.mvp);
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        for(ComponentLayout& child_layout : component_layout.children)
+        {
+            DrawElement(child_layout);
+        }
+
     }
 }

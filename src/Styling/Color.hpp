@@ -34,9 +34,9 @@ namespace BL
                 int r, g, b;
 
                 if(hexcode.find("#") != std::string::npos)
-                    sscanf(hexcode.c_str(), "#%02x%02x%02x", &r, &g, &b);
+                    sscanf_s(hexcode.c_str(), "#%02x%02x%02x", &r, &g, &b);
                 else 
-                    sscanf(hexcode.c_str(), "%02x%02x%02x", &r, &g, &b);
+                    sscanf_s(hexcode.c_str(), "%02x%02x%02x", &r, &g, &b);
 
                 new_color.m_rgb.x = r;
                 new_color.m_rgb.y = g;

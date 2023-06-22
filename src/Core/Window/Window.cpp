@@ -137,7 +137,7 @@ namespace BL
                         }
                     }
 
-                    m_Renderer->ComputeComponent(nullptr , m_pages[m_activepage], &m_stylecollections[m_activestylecollection], 1.0f / refreshrate);
+                    m_Renderer->Update(m_pages[m_activepage], &m_stylecollections[m_activestylecollection], 1.0f / refreshrate);
 
                     handleEvents();
 

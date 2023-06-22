@@ -11,10 +11,20 @@
 
 namespace BL
 {
+    struct ComponentLayout
+    {
+        Mat4 mvp;
+        Color background_color;
+        float opacity;
+
+        std::vector<ComponentLayout> children;
+    };
+
     class Renderer
     {
         // Variables
         public:
+            ComponentLayout page_layout;
         private:
             int m_FWidth; // F stands for frame buffer
             int m_FHeight;
@@ -26,19 +36,19 @@ namespace BL
             unsigned int m_VAO;
             unsigned int m_EBO;
 
-            int m_rotation;
 
         // Functions
         public:
             Renderer();
             ~Renderer();
 
+            void Update(Component* page, StyleCollection* stylecollection, float dt);
             void UpdateProjection(int fwidth, int fheight);
-
-            void ComputeComponent(Component* parent, Component* child, StyleCollection* stylecollection, float dt);
 
         private:
 
-            void Draw();
+            void DrawPage();
+            void DrawElement(ComponentLayout& component_layout);
+            ComponentLayout ComputeComponent(Component* parent, Component* child, StyleCollection* stylecollection, float dt);
     };
 }
