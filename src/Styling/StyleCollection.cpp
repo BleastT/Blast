@@ -10,6 +10,8 @@ namespace BL {
 			return;
 		}
 
+
+
 		std::cout << "the style " << style_name << " already exists : from appendNewStyle function \n";
 	}
 
@@ -35,7 +37,7 @@ namespace BL {
 		std::cout << "the style " << style_name << " does not exist : from deleteStyle function\n";
 	}
 
-	Style& StyleCollection::getStyle(std::string style_name)
+	Style StyleCollection::getStyle(std::string style_name)
 	{
 		if(m_styles.find(style_name) != m_styles.end())
 		{
@@ -43,6 +45,7 @@ namespace BL {
 		}
 
 		std::cout << "the style " << style_name << " does not exist : from getStyle function\n";
+		return Style();
 	}
 
 	void StyleCollection::changeStyleName(std::string old_name, std::string new_name)

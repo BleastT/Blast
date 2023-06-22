@@ -20,7 +20,7 @@ namespace BL
     // Parameters:
     // - ws: WindowSettings object that contains the window settings
     Window::Window(WindowSettings ws)
-    : were_event_handled(false), m_activepage("none")
+    : m_activepage("none"), m_activestylecollection("none")
     {
         // Initialize member variables
         m_ws = ws;
@@ -123,13 +123,21 @@ namespace BL
 
                     if(m_activepage == "none")
                     {
-                        m_activepage = m_pages.begin()->first;
+                        setPageActive(m_pages.begin()->first);
 
                         std::cout << "no active page selected, using " << m_activepage << " instead\n";
                     }
+                    if(!m_stylecollections.empty())
+                    {
+                        if(m_activestylecollection == "none")
+                        {
+                            setStyleCollectionActive(m_stylecollections.begin()->first);
 
+                            std::cout << "no style collection selected, using " << m_activestylecollection << " instead\n";
+                        }
+                    }
 
-                    m_Renderer->ComputeComponent(&m_pages[m_activepage], nullptr, &m_stylecollections[m_activestylecollection], 1.0f / refreshrate);
+                    m_Renderer->ComputeComponent(nullptr , m_pages[m_activepage], &m_stylecollections[m_activestylecollection], 1.0f / refreshrate);
 
                     handleEvents();
 
@@ -151,6 +159,11 @@ namespace BL
 
         // Wait for the render thread to finish
         m_Render_thread.join();  
+
+        if(m_activepage != "none")
+        {
+            runComponentsQuitFunction(*m_pages[m_activepage]);
+        }
     }
 
     // Destroy the GLFW window
@@ -189,7 +202,7 @@ namespace BL
     }
 
 
-    void Window::appendNewPage(std::string ref_name, Component page)
+    void Window::appendNewPage(std::string ref_name, Component* page)
     {
         if(m_pages.find(ref_name) == m_pages.end())
         {
@@ -207,6 +220,7 @@ namespace BL
         if(m_pages.find(ref_name) != m_pages.end())
         {
             m_activepage = ref_name;
+            runComponentsStartFunction(*m_pages[m_activepage]);
             return;
         }
 
@@ -249,5 +263,27 @@ namespace BL
         }
 
         last_time = glfwGetTime();
+    }
+
+
+    void Window::runComponentsStartFunction(Component& component)
+    {
+        component.render();
+        component.start();
+
+        for(Component& child : component.getChildren())
+        {
+            runComponentsStartFunction(child);
+        }
+    }
+
+    void Window::runComponentsQuitFunction(Component& component)
+    {
+        component.quit();
+
+        for(Component& child : component.getChildren())
+        {
+            runComponentsQuitFunction(child);
+        }
     }
 }

@@ -7,11 +7,11 @@
 
 namespace BL
 {
-    class Component
+    struct Component
     {
         private:
-            std::string m_name;
             std::vector<Component> m_children;
+            std::string m_name;
 
         public:
 
@@ -31,11 +31,19 @@ namespace BL
                 return m_children;
             } 
 
+            std::string getName()
+            {
+                return m_name;
+            }
+
 
             virtual void start() {}
 
             virtual void quit() {}
 
-            virtual Component render() {return  Component();}
+            virtual void render() {}
     };
+
+
+
 }

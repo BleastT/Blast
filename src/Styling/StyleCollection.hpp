@@ -22,7 +22,7 @@ namespace BL{
 
 			void deleteStyle(std::string style_name);
 
-			Style& getStyle(std::string style_name);
+			Style getStyle(std::string style_name);
 
 			void changeStyleName(std::string old_name, std::string new_name);
 	};

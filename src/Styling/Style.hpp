@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 
 namespace BL{
 	struct Style
@@ -33,5 +34,9 @@ namespace BL{
 			margin_bottom = bottom;
 			margin_left = left;
 		}
+
+
+		int left {0};
+		int top {0};
 	};
 }

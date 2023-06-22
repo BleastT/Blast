@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-#define BLAST_WIN
 #ifdef BLAST_WIN
 #define GLFW_EXPOSE_NATIVE_WIN32
 #define WIN32_LEAN_AND_MEAN 
@@ -74,7 +73,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 return HTRIGHT;
             }
 
-            return HTSIZE;
+            // makes the aero snap menu visible on windows 11 when you hover
+            // return HTMAXBUTTON;
 
             break;
         }

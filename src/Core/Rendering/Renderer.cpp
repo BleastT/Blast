@@ -58,33 +58,99 @@ namespace BL
 
     void Renderer::ComputeComponent(Component* parent, Component* child, StyleCollection* stylecollection, float dt)
     {
-        if(m_rotation >= 360)
-        {
-            m_rotation = 0;
-        }
+        int width;
+        int height;
 
-        m_rotation += 250 * dt;
+        int pos_x;
+        int pos_y;
+
+        float color_r;
+        float color_g;
+        float color_b;
+
+        if(parent == nullptr)
+        {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            width = m_FWidth;
+            height = m_FHeight;
+
+            pos_x = 0;
+            pos_y = 0;
+
+            color_r = 0.2f;
+            color_g = 0.5f;
+            color_b = 0.3f;
+        }
+        else
+        {
+            std::vector<std::string> component_names;
+            std::vector<Style> component_styles;
+
+            std::string full_name = child->getName();
+
+            size_t pos = 0;
+            std::string token;
+            while ((pos = full_name.find(" ")) != std::string::npos) {
+                token = full_name.substr(0, pos);
+                component_names.push_back(token);
+                full_name.erase(0, pos + 1);
+            }
+            component_names.push_back(full_name);
+
+
+            for (int i = 0; i < component_names.size(); i++)
+            {
+                component_styles.push_back(stylecollection->getStyle(component_names[i]));
+            }
+
+            width = component_styles[0].width;
+            height = component_styles[0].height;
+
+            pos_x = component_styles[0].left;
+            pos_y = component_styles[0].top;
+
+            color_r = 1.0f;
+            color_g = 0.4f;
+            color_b = 1.0f;
+
+        }   
+
+
+
+        // std::cout << parent->m_name << std::endl;
+
+        // if(m_rotation >= 360)
+        // {
+        //     m_rotation = 0;
+        // }
+
+        // m_rotation += 250 * dt;
 
         m_shader.bind();
 
-        Vec3 s(100, 100, 1);
-        Vec3 t(m_FWidth / 2.0f, m_FHeight / 2.0f, 0);
-        Vec3 r(0, 0, m_rotation);
+        Vec3 s(width, height, 1);
+        Vec3 t(pos_x + (width / 2), pos_y + (height / 2), 0);
+        Vec3 r(0, 0, 0);
 
         Mat4 model = Mat4::transform(r, s, t);
         Mat4 mvp = m_proj.multiply(model);
 
-        m_shader.setUniformVec4f("color", 0.2f, 0.3f, 0.5f, 1.0f);
+        m_shader.setUniformVec4f("color", color_r, color_g, color_b, 1.0f);
         m_shader.setUniformMat4("mvp", mvp);
 
 
         Draw();
+
+
+        for(Component& child_ : child->getChildren())
+        {
+            ComputeComponent(child, &child_, stylecollection, dt);
+        }
     }
 
     void Renderer::Draw()
     {
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);
     }
 }
