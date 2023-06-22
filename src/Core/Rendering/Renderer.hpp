@@ -7,6 +7,7 @@
 #include "../../Math/Vec3.hpp"
 #include "../../Components/Component.hpp"
 #include "../../Styling/StyleCollection.hpp"
+#include "../../Styling/Color.hpp"
 
 namespace BL
 {

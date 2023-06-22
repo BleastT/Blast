@@ -16,4 +16,6 @@
 // Styling
 
 #include "./Styling/Style.hpp"
+#include "./Styling/Color.hpp"
+#include "./Styling/ColorTable.hpp"
 #include "./Styling/StyleCollection.hpp"

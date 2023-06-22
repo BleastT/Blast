@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "Color.hpp"
+
 namespace BL{
 	struct Style
 	{
@@ -35,8 +37,12 @@ namespace BL{
 			margin_left = left;
 		}
 
-
 		int left {0};
 		int top {0};
+
+		Color color {Color::rgb(0, 0, 0)};
+		Color background_color {Color::rgb(0, 0, 0)};
+
+		float opacity {1};
 	};
 }

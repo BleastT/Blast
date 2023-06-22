@@ -87,6 +87,7 @@ int main ()
 
 
     BL::Style st9;
+    st9.background_color = BL::Color::color(BL_DARKORANGE);
     st9.width = 540;
     st9.height = 60;
     st9.left = 190;

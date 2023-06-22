@@ -61,12 +61,12 @@ namespace BL
         int width;
         int height;
 
-        int pos_x;
-        int pos_y;
+        int left;
+        int top;
 
-        float color_r;
-        float color_g;
-        float color_b;
+        Color background_color;
+
+        float opacity;
 
         if(parent == nullptr)
         {
@@ -75,12 +75,12 @@ namespace BL
             width = m_FWidth;
             height = m_FHeight;
 
-            pos_x = 0;
-            pos_y = 0;
+            left = 0;
+            top = 0;
 
-            color_r = 0.2f;
-            color_g = 0.5f;
-            color_b = 0.3f;
+            background_color = Color::rgb(250, 198, 14);
+
+            opacity = 1;
         }
         else
         {
@@ -107,13 +107,12 @@ namespace BL
             width = component_styles[0].width;
             height = component_styles[0].height;
 
-            pos_x = component_styles[0].left;
-            pos_y = component_styles[0].top;
+            left = component_styles[0].left;
+            top = component_styles[0].top;
 
-            color_r = 1.0f;
-            color_g = 0.4f;
-            color_b = 1.0f;
+            background_color = component_styles[0].background_color;
 
+            opacity = component_styles[0].opacity;
         }   
 
 
@@ -130,13 +129,13 @@ namespace BL
         m_shader.bind();
 
         Vec3 s(width, height, 1);
-        Vec3 t(pos_x + (width / 2), pos_y + (height / 2), 0);
+        Vec3 t(left + (width / 2), top + (height / 2), 0);
         Vec3 r(0, 0, 0);
 
         Mat4 model = Mat4::transform(r, s, t);
         Mat4 mvp = m_proj.multiply(model);
 
-        m_shader.setUniformVec4f("color", color_r, color_g, color_b, 1.0f);
+        m_shader.setUniformVec4f("color", background_color.getFormattedRGB().x, background_color.getFormattedRGB().y, background_color.getFormattedRGB().z, opacity);
         m_shader.setUniformMat4("mvp", mvp);
 
 
