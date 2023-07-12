@@ -114,20 +114,25 @@ namespace BL
             component_names.push_back(full_name);
 
 
+            Style default_style;
+            component_styles.push_back(default_style);
             for (int i = 0; i < component_names.size(); i++)
             {
                 component_styles.push_back(stylecollection->getStyle(component_names[i]));
             }
 
-            width = component_styles[0].width;
-            height = component_styles[0].height;
+            for(Style &style: component_styles)
+            {
+                width = style.width;
+                height = style.height;
 
-            left = component_styles[0].left;
-            top = component_styles[0].top;
+                left = style.left;
+                top = style.top;
 
-            component_layout.background_color = component_styles[0].background_color;
+                component_layout.background_color = style.background_color;
 
-            component_layout.opacity = component_styles[0].opacity;
+                component_layout.opacity = style.opacity;
+            }
         }  
 
         Vec3 s(width, height, 1);
@@ -137,14 +142,8 @@ namespace BL
         Mat4 model = Mat4::transform(r, s, t);
         component_layout.mvp = m_proj.multiply(model);
 
-        if(parent == nullptr)
-        {
-            return component_layout;
-        }
-        else{
-            return component_layout;
-        }
-
+        
+        return component_layout;
     }
 
     void Renderer::DrawPage()

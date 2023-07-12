@@ -50,5 +50,8 @@ namespace BL
             void DrawPage();
             void DrawElement(ComponentLayout& component_layout);
             ComponentLayout ComputeComponent(Component* parent, Component* child, StyleCollection* stylecollection, float dt);
+
+
+            void apply_style(Style& style);
     };
 }

@@ -11,8 +11,6 @@ file(GLOB_RECURSE  code_SRC
 
 add_executable(blast ${code_SRC})
 
-
-
 target_include_directories(blast PRIVATE include)
 target_link_directories(blast PRIVATE lib)
 target_link_libraries(blast glfw3 opengl32 gdi32)

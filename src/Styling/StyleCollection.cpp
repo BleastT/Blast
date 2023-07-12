@@ -44,7 +44,10 @@ namespace BL {
 			return m_styles[style_name];
 		}
 
-		std::cout << "the style " << style_name << " does not exist : from getStyle function\n";
+		if(style_name != "")
+		{
+			std::cout << "the style " << style_name << " does not exist : from getStyle function\n";
+		}
 		return Style();
 	}
 
